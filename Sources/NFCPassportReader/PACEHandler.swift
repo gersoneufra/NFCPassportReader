@@ -88,7 +88,7 @@ public class PACEHandler {
         digestAlg = try paceInfo.getDigestAlgorithm()  // Either SHA-1 or SHA-256.
         keyLength = try paceInfo.getKeyLength()  // Get key length  the enc cipher. Either 128, 192, or 256.
 
-        paceKeyType = PACEHandler.MRZ_PACE_KEY_REFERENCE
+        paceKeyType = PACEHandler.CAN_PACE_KEY_REFERENCE
         paceKey = try createPaceKey( from: mrzKey )
         
         // Temporary logging
