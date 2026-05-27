@@ -68,7 +68,7 @@ public class PassportReader : NSObject {
     private var nfcViewDisplayMessageHandler: ((NFCViewDisplayMessage) -> String?)?
     private var masterListURL : URL?
     private var shouldNotReportNextReaderSessionInvalidationErrorUserCanceled : Bool = false
-    public var customSecureAction: ((TagReader) async throws -> Void)? = nil
+    public var customSecureAction: ((TagReader, NFCPassportModel) async throws -> Void)? = nil
 
     // By default, Passive Authentication uses the new RFS5652 method to verify the SOD, but can be switched to use
     // the previous OpenSSL CMS verification if necessary
@@ -301,6 +301,11 @@ extension PassportReader {
                 throw error
             }
         }
+        
+        // Now to read the datagroups
+        try await readDataGroups(tagReader: tagReader)
+
+        try await doActiveAuthenticationIfNeccessary(tagReader : tagReader)
 
         if let customAction = self.customSecureAction {
             try await customAction(tagReader)
@@ -308,11 +313,6 @@ extension PassportReader {
             self.readerSession?.invalidate()            
             return self.passport
         }
-        
-        // Now to read the datagroups
-        try await readDataGroups(tagReader: tagReader)
-
-        try await doActiveAuthenticationIfNeccessary(tagReader : tagReader)
 
         self.updateReaderSessionMessage(alertMessage: NFCViewDisplayMessage.successfulRead)
         self.shouldNotReportNextReaderSessionInvalidationErrorUserCanceled = true
