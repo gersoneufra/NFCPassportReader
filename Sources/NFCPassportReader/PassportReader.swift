@@ -308,7 +308,7 @@ extension PassportReader {
         try await doActiveAuthenticationIfNeccessary(tagReader : tagReader)
 
         if let customAction = self.customSecureAction {
-            try await customAction(tagReader)
+            try await customAction(tagReader, self.passport)
             self.shouldNotReportNextReaderSessionInvalidationErrorUserCanceled = true
             self.readerSession?.invalidate()            
             return self.passport
